@@ -1,0 +1,7 @@
+streamlit
+streamlit-authenticator
+streamlit_folium
+numpy
+pandas
+seaborn
+tensorflow
