@@ -1,12 +1,12 @@
 cookie:
-  expiry_days: 0
+  expiry_days: 1
   key: some_signature_key
-  name: some_cookie_name
+  name: streamlit-cookie
 credentials:
   usernames:
     asap:
       name: asap
-      password: $2b$12$b2aXO04GBHQhkMGWguaerOuQpT.cipZMsBbiPV2kIQXKKHXpE/cY6
+      password: $2b$12$T657ZXBqAyJuartbrwlUMOP9G.n94O8qsdsuyDZRxUKQ2Yj.TsJHu
 preauthorized:
   emails:
   - sodyn99@gmail.com

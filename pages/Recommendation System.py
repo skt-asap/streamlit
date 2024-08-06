@@ -13,7 +13,8 @@ st.set_page_config(page_title="Frequency Off Recommendation System",
                    page_icon="📡")
 
 if not st.session_state.get('authentication_status', False):
-    st.info('Please Login from the Home page and try again.')
+    st.write("### 🚨 **Access Denied** 🚨")
+    st.html("You do not have permission to view this page.<br>Please log in.")
     st.stop()
 
 # Streamlit 인터페이스 설정
@@ -45,10 +46,10 @@ input_data = pd.DataFrame({
 # 모델 불러오기 및 예측
 def load_and_predict(model_name, input_data, df_map, progress_callback=None):
     recommended_cell_states = {}
-    
+
     if progress_callback:
         progress_callback(10)  # 초기 진행 상태
-    
+
     # 각 모델에 맞는 가상 로직
     if model_name == '모델 1: Rule-based':
         # Rule-based 로직
@@ -63,14 +64,14 @@ def load_and_predict(model_name, input_data, df_map, progress_callback=None):
     elif model_name == '모델 2: Autoencoder':
         # Autoencoder 모델 불러오기
         model = tf.keras.models.load_model('autoencoder_model.h5')
-        
+
         # 입력 데이터 전처리 (예시)
         input_array = df_map[['hour', 'is_weekend']].values  # 필요한 입력 특성 사용
-        
+
         # 모델 예측
         reconstruction = model.predict(input_array)
         reconstruction_error = np.mean(np.square(input_array - reconstruction), axis=1)
-        
+
         if progress_callback:
             progress_callback(60)  # 중간 진행 상태
 
@@ -87,13 +88,13 @@ def load_and_predict(model_name, input_data, df_map, progress_callback=None):
     elif model_name == '모델 3: K-means Clustering':
         # K-means 모델 불러오기
         model = tf.keras.models.load_model('kmeans_model.h5')
-        
+
         # 입력 데이터 전처리 (예시)
         input_array = df_map[['hour', 'is_weekend']].values  # 필요한 입력 특성 사용
-        
+
         # 모델 예측
         clusters = model.predict(input_array)
-        
+
         if progress_callback:
             progress_callback(60)  # 중간 진행 상태
 
@@ -105,15 +106,16 @@ def load_and_predict(model_name, input_data, df_map, progress_callback=None):
                 recommended_cell_states[row['enbid_pci']] = 'ON'
             if progress_callback:
                 progress_callback(60 + 30 * (idx + 1) // len(df_map))  # 진행 상태 업데이트
-    
+
     return recommended_cell_states
 
 if run_button:
-    
-    with st.sidebar:
-        with st.spinner('데이터 로딩 중...'):
-            df, df_map = data.load_data()
-            st.sidebar.success('데이터 로드 완료')
+
+    # with st.sidebar:
+    #     with st.spinner('데이터 로딩 중...'):
+    #         df, df_map = data.load_data()
+    #         st.sidebar.success('데이터 로드 완료')
+    df, df_map = data.load_data()
 
     # 프로그래스 바 생성
     progress_bar = st.sidebar.progress(0)

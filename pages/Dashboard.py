@@ -12,14 +12,16 @@ st.set_page_config(page_title="Dashboard",
                    page_icon="🗺️")
 
 if not st.session_state.get('authentication_status', False):
-    st.info('Please Login from the Home page and try again.')
+    st.write("### 🚨 **Access Denied** 🚨")
+    st.html("You do not have permission to view this page.<br>Please log in.")
     st.stop()
 
 # 데이터 로드 및 처리
-with st.sidebar:
-    with st.spinner("데이터 로드 중..."):
-        df, df_map = data.load_data()
-        st.sidebar.success("데이터 로드 완료!")
+# with st.sidebar:
+#     with st.spinner("데이터 로드 중..."):
+#         df, df_map = data.load_data()
+#         st.sidebar.success("데이터 로드 완료!")
+df, df_map = data.load_data()
 
 # 지도 생성
 cell_map = map.create_map(df_map)
@@ -40,7 +42,7 @@ def main():
     show_map = st.sidebar.checkbox("지도 보기", True)
     if show_map:
         st.markdown("### 🗺️ 부산 PoC 셀 사이트")
-        
+
         folium_static(cell_map)
 
         st.write("""

@@ -17,7 +17,6 @@ def run():
 def st_authenticator():
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=stauth.SafeLoader)
-        file.close()
 
     authenticator = stauth.Authenticate(
         config['credentials'],
@@ -31,16 +30,28 @@ def st_authenticator():
 
 if __name__ == "__main__":
     run()
-    authenticator  = st_authenticator()
-    name, authentication_status, username = authenticator.login("main")
+    authenticator = st_authenticator()
 
+    # 세션 상태 초기화
+    if 'authentication_status' not in st.session_state:
+        st.session_state['authentication_status'] = None
+        st.session_state['username'] = None
+
+    # 로그인 위젯
+    name, authentication_status, username = authenticator.login("main", "Login")
+
+    # 로그인 상태를 세션 상태에 저장
     if authentication_status:
-        st.session_state.authentication_status = True
-        st.success(f"Logged Successfully")
-        authenticator.logout('**Logout**', 'main', key='unique_key')
+        st.session_state['authentication_status'] = True
+        st.session_state['username'] = username
+        st.success(f"{name}님, 환영합니다!")
+        authenticator.logout('Logout', 'main', key='unique_key')
+
     elif authentication_status is False:
-        st.session_state.authentication_status = False
-        st.error('Username/password is incorrect')
+        st.session_state['authentication_status'] = False
+        st.error('아이디/비밀번호가 잘못되었습니다.')
+
     elif authentication_status is None:
-        st.session_state.authentication_status = None
-        st.warning('Please enter your username and password')
+        st.session_state['authentication_status'] = None
+        st.warning('아이디와 비밀번호를 입력해주세요.')
+
