@@ -13,7 +13,6 @@ def run():
     )
 
     st.write("# SKT AI Fellowship Team ASAP 👋")
-    st.write("## 🌐 Welcome to the ASAP project!")
 
 def st_authenticator():
     with open('config.yaml') as file:
