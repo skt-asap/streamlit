@@ -2,7 +2,6 @@ import folium
 from folium import CustomIcon, DivIcon
 
 def create_map(dataframe, recommendations):
-    # 지도 생성
     m = folium.Map(
         location=[35.1796, 129.0756],
         zoom_start=12,
@@ -10,14 +9,11 @@ def create_map(dataframe, recommendations):
         tiles='CartoDB positron'
     )
 
-    # 각 위치에 마커 추가
     for idx, row in dataframe.iterrows():
         cell_id = row['enbid_pci']
 
-        # 해당 cell_id의 추천 상태 가져오기
         recommended_cell_state = recommendations.get(cell_id, 'OFF')
 
-        # 상태에 따라 아이콘 색상 선택
         if recommended_cell_state == 'ON':
             color = 'blue'
         else:
@@ -33,7 +29,6 @@ def create_map(dataframe, recommendations):
             icon_anchor=(10, 10)
         )
 
-        # Marker 추가 및 팝업 설정
         marker = folium.Marker(
             location=(row['ru_svc_lat_val'], row['ru_svc_lng_val']),
             icon=custom_icon,

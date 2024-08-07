@@ -32,15 +32,12 @@ if __name__ == "__main__":
     run()
     authenticator = st_authenticator()
 
-    # 세션 상태 초기화
     if 'authentication_status' not in st.session_state:
         st.session_state['authentication_status'] = None
         st.session_state['username'] = None
 
-    # 로그인 위젯
     name, authentication_status, username = authenticator.login("main", "Login")
 
-    # 로그인 상태를 세션 상태에 저장
     if authentication_status:
         st.session_state['authentication_status'] = True
         st.session_state['username'] = username
