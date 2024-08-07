@@ -23,7 +23,7 @@ if 'selected_cell' not in st.session_state:
     st.session_state['selected_cell'] = "33011_221"
 
 if 'selected_rbs' not in st.session_state:
-    st.session_state['selected_rbs'] = ['RB_800', 'RB_1800', 'RB_2100', 'RB_2600_10', 'RB_2600_20']
+    st.session_state['selected_rbs'] = ['RB_800']
 
 def main():
     st.markdown("# Dashboard")
