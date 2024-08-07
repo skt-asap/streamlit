@@ -12,8 +12,8 @@ st.set_page_config(page_title="Frequency Off Recommendation System",
                    page_icon="📡")
 
 if not st.session_state.get('authentication_status', False):
-    st.write("### 🚨 **Access Denied** 🚨")
-    st.html("You do not have permission to view this page.<br>Please log in.")
+    st.write("### 🚨 **접근 불가** 🚨")
+    st.write("이 페이지를 볼 수 있는 권한이 없습니다.<br>로그인해 주세요.", unsafe_allow_html=True)
     st.stop()
 
 st.title('Cell Off Recommendation System')
@@ -24,7 +24,7 @@ time_input = st.time_input('시간 선택:', time(0, 0))
 timestamp_input = datetime.combine(date_input, time_input)
 
 model_options = ['모델 1: Rule-based']
-selected_model = st.selectbox('사용할 모델을 선택하세요:', model_options)
+selected_model = st.selectbox('모델 선택:', model_options)
 
 run_button = st.button('Run')
 

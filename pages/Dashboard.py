@@ -6,32 +6,24 @@ import map
 import js
 import chart
 
-# Streamlit 페이지 설정
 st.set_page_config(page_title="Dashboard",
                    layout="wide",
                    page_icon="🗺️")
 
 if not st.session_state.get('authentication_status', False):
-    st.write("### 🚨 **Access Denied** 🚨")
-    st.html("You do not have permission to view this page.<br>Please log in.")
+    st.write("### 🚨 **접근 불가** 🚨")
+    st.write("이 페이지를 볼 수 있는 권한이 없습니다.<br>로그인해 주세요.", unsafe_allow_html=True)
     st.stop()
 
-# 데이터 로드 및 처리
-# with st.sidebar:
-#     with st.spinner("데이터 로드 중..."):
-#         df, df_map = data.load_data()
-#         st.sidebar.success("데이터 로드 완료!")
 df, df_map = data.load_data()
 
-# 지도 생성
 cell_map = map.create_map(df_map)
 
-# Streamlit 세션 상태 초기화
 if 'selected_cell' not in st.session_state:
-    st.session_state['selected_cell'] = ""
+    st.session_state['selected_cell'] = "33011_221"
 
 if 'selected_rbs' not in st.session_state:
-    st.session_state['selected_rbs'] = ['RB_800']
+    st.session_state['selected_rbs'] = ['RB_800', 'RB_1800', 'RB_2100', 'RB_2600_10', 'RB_2600_20']
 
 def main():
     st.markdown("# Dashboard")
@@ -39,7 +31,6 @@ def main():
     show_map = st.sidebar.checkbox("지도 보기", True)
     if show_map:
         st.markdown("### 🗺️ 부산 PoC 셀 사이트")
-
         folium_static(cell_map)
 
         st.write("""
@@ -61,8 +52,16 @@ def main():
 
     show_chart = st.sidebar.checkbox("차트 보기", True)
     if show_chart:
-        selected_cell = st.selectbox("조회할 셀 ID:", unique_cells, index=unique_cells.index(st.session_state['selected_cell']) if st.session_state['selected_cell'] in unique_cells else 0)
-        st.session_state['selected_cell'] = selected_cell
+        def update_selected_cell():
+            st.session_state['selected_cell'] = st.session_state['selected_cell_dropdown']
+
+        st.selectbox(
+            "조회할 셀 ID:",
+            unique_cells,
+            index=unique_cells.index(st.session_state['selected_cell']) if st.session_state['selected_cell'] in unique_cells else 0,
+            key="selected_cell_dropdown",
+            on_change=update_selected_cell
+        )
 
         cell_data = df[df['enbid_pci'] == st.session_state['selected_cell']].copy()
 
@@ -79,8 +78,16 @@ def main():
             if cell_data['Equip_2600_20'].eq(1).any():
                 rb_options.append('RB_2600_20')
 
-            selected_rbs = st.multiselect("RB 컬럼:", rb_options, default=[rb for rb in st.session_state['selected_rbs'] if rb in rb_options])
-            st.session_state['selected_rbs'] = selected_rbs
+            def update_selected_rbs():
+                st.session_state['selected_rbs'] = st.session_state['selected_rbs_multiselect']
+
+            st.multiselect(
+                "RB 컬럼:",
+                rb_options,
+                default=[rb for rb in st.session_state['selected_rbs'] if rb in rb_options],
+                key="selected_rbs_multiselect",
+                on_change=update_selected_rbs
+            )
 
             cell_data['timestamp'] = pd.to_datetime(cell_data['timestamp'])
 
@@ -106,7 +113,6 @@ def main():
             )
 
             chart_obj = chart.create_area_chart(filtered_data_long, st.session_state['selected_cell'])
-
             st.altair_chart(chart_obj, use_container_width=True)
         else:
             st.write("선택한 셀 ID에 대한 데이터가 없습니다.")
