@@ -20,10 +20,10 @@ df, df_map = data.load_data()
 cell_map = map.create_map(df_map)
 
 if 'selected_cell' not in st.session_state:
-    st.session_state['selected_cell'] = "33011_221"
+    st.session_state['selected_cell'] = ""
 
 if 'selected_rbs' not in st.session_state:
-    st.session_state['selected_rbs'] = ['RB_800']
+    st.session_state['selected_rbs'] = ['RB_800', 'RB_1800', 'RB_2100', 'RB_2600_10', 'RB_2600_20']
 
 def main():
     st.markdown("# Dashboard")
@@ -31,6 +31,7 @@ def main():
     show_map = st.sidebar.checkbox("지도 보기", True)
     if show_map:
         st.markdown("### 🗺️ 부산 PoC 셀 사이트")
+        
         folium_static(cell_map)
 
         st.write("""
@@ -45,23 +46,14 @@ def main():
         </style>
         """, unsafe_allow_html=True)
 
-        # JavaScript
         js.set_marker_click_template()
 
     unique_cells = df['enbid_pci'].unique().tolist()
 
     show_chart = st.sidebar.checkbox("차트 보기", True)
     if show_chart:
-        def update_selected_cell():
-            st.session_state['selected_cell'] = st.session_state['selected_cell_dropdown']
-
-        st.selectbox(
-            "조회할 셀 ID:",
-            unique_cells,
-            index=unique_cells.index(st.session_state['selected_cell']) if st.session_state['selected_cell'] in unique_cells else 0,
-            key="selected_cell_dropdown",
-            on_change=update_selected_cell
-        )
+        selected_cell = st.selectbox("조회할 셀 ID:", unique_cells, index=unique_cells.index(st.session_state['selected_cell']) if st.session_state['selected_cell'] in unique_cells else 0)
+        st.session_state['selected_cell'] = selected_cell
 
         cell_data = df[df['enbid_pci'] == st.session_state['selected_cell']].copy()
 
@@ -78,16 +70,8 @@ def main():
             if cell_data['Equip_2600_20'].eq(1).any():
                 rb_options.append('RB_2600_20')
 
-            def update_selected_rbs():
-                st.session_state['selected_rbs'] = st.session_state['selected_rbs_multiselect']
-
-            st.multiselect(
-                "RB 컬럼:",
-                rb_options,
-                default=[rb for rb in st.session_state['selected_rbs'] if rb in rb_options],
-                key="selected_rbs_multiselect",
-                on_change=update_selected_rbs
-            )
+            selected_rbs = st.multiselect("RB 컬럼:", rb_options, default=[rb for rb in st.session_state['selected_rbs'] if rb in rb_options])
+            st.session_state['selected_rbs'] = selected_rbs
 
             cell_data['timestamp'] = pd.to_datetime(cell_data['timestamp'])
 
@@ -113,6 +97,8 @@ def main():
             )
 
             chart_obj = chart.create_area_chart(filtered_data_long, st.session_state['selected_cell'])
+
+            # 차트 표시
             st.altair_chart(chart_obj, use_container_width=True)
         else:
             st.write("선택한 셀 ID에 대한 데이터가 없습니다.")
